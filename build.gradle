@@ -92,6 +92,8 @@ group   = 'com.adaptris'
 version = releaseVersion
 applicationName = 'interlok-create-sonar-report'
 mainClassName  = 'com.adaptris.verify.CreateSonarReport'
+distTar.enabled=false
+distZip.enabled=false
 generateLombokConfig.enabled = false
 def versionDir = "$buildDir/version"
 
@@ -361,6 +363,10 @@ spotbugsMain {
 
 // disable spotbugsTests which checks our test code..
 spotbugsTest.enabled = false
+
+installDist {
+  destinationDir = new File(project.buildDir, 'staged')
+}
 
 javadoc.dependsOn offlinePackageList,umlJavadoc
 processTestResources.dependsOn buildUnitTestProperties
