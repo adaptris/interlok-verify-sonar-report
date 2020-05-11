@@ -140,7 +140,7 @@ dependencies {
   offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}
   offlineJavadocPackages ("com.adaptris:interlok-common:$interlokCoreVersion:javadoc@jar") { changing= true}
 
-  testCompile ('org.junit.jupiter:junit-jupiter-engine:5.4.2')
+  testCompile ('org.junit.jupiter:junit-jupiter-engine:5.6.2')
   testCompile ('commons-io:commons-io:2.6')
 
   javadoc("com.adaptris:interlok-core-apt:$interlokCoreVersion") { changing= true}
