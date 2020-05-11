@@ -6,6 +6,7 @@ plugins {
   id 'maven'
   id 'maven-publish'
   id 'jacoco'
+  id 'application'
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '5.0.3'
   id 'com.github.spotbugs' version '4.0.5'
@@ -26,7 +27,7 @@ ext {
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
   interlokJavadocs= project.hasProperty('interlokJavadocs') ? project.getProperty('interlokJavadocs') : javadocsBaseUrl + "/interlok-core/" + interlokCoreVersion
   interlokCommonJavadocs= project.hasProperty('interlokCommonJavadocs') ? project.getProperty('interlokCommonJavadocs') : javadocsBaseUrl + "/interlok-common/" + interlokCoreVersion
-  componentName='Interlok - Verify Gradle Report'
+  componentName='Interlok - Verify Sonar Report'
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
 }
@@ -89,6 +90,8 @@ ext.buildInfo = { ->
 sourceCompatibility = 1.8
 group   = 'com.adaptris'
 version = releaseVersion
+applicationName = 'interlok-create-sonar-report'
+mainClassName  = 'com.adaptris.verify.CreateSonarReport'
 generateLombokConfig.enabled = false
 def versionDir = "$buildDir/version"
 

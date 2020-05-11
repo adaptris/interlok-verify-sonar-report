@@ -106,7 +106,7 @@ public class CreateSonarReport {
 
   private void usage(){
     HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "create-verify-report", options );
+    formatter.printHelp( "interlok-create-sonar-report", options );
   }
 
   private String readFile(String path, Charset encoding) throws IOException {
