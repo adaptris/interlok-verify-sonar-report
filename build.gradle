@@ -135,7 +135,7 @@ dependencies {
   compile ('com.fasterxml.jackson.core:jackson-databind:2.11.0')
   compile ('commons-cli:commons-cli:1.4')
 
-  umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
+  umlDoclet("nl.talsmasoftware:umldoclet:2.0.9")
 
   offlineJavadocPackages ("com.adaptris:interlok-core:$interlokCoreVersion:javadoc@jar") { changing= true}
   offlineJavadocPackages ("com.adaptris:interlok-common:$interlokCoreVersion:javadoc@jar") { changing= true}
