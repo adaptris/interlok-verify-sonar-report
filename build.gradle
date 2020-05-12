@@ -22,7 +22,7 @@ ext {
   repoPassword = project.hasProperty('repoPassword') ? project.getProperty('repoPassword') : 'unknown'
   defaultNexusRepo = project.hasProperty('defaultNexusRepo') ? project.getProperty('defaultNexusRepo') : 'https://repo1.maven.org/maven2/'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  componentName='Interlok - Verify Sonar Report'
+  componentName='Interlok - Verify Report'
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
 }
@@ -83,10 +83,10 @@ ext.buildInfo = { ->
 }
 
 sourceCompatibility = 1.8
-group   = 'com.adaptris'
+group   = 'com.adaptris.labs'
 version = releaseVersion
-applicationName = 'interlok-create-sonar-report'
-mainClassName  = 'com.adaptris.verify.CreateSonarReport'
+applicationName = 'interlok-verify-report'
+mainClassName  = 'com.adaptris.labs.verify.CreateVerifyReport'
 distTar.enabled=false
 distZip.enabled=false
 generateLombokConfig.enabled = false
@@ -205,11 +205,6 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
   from javadoc.destinationDir
 }
 
-task examplesJar(type: Jar, dependsOn: test) {
-  classifier = 'examples'
-  from new File(buildDir, '/examples')
-}
-
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
     from sourceSets.main.extensions.delombokTask
@@ -261,7 +256,6 @@ task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
 
 artifacts {
   archives javadocJar
-  archives examplesJar
   archives sourcesJar
 }
 
@@ -271,12 +265,11 @@ publishing {
       from components.java
 
       artifact javadocJar { classifier "javadoc" }
-      artifact examplesJar { classifier "examples" }
       artifact sourcesJar { classifier "sources" }
 
       pom.withXml {
         asNode().appendNode("name", componentName)
-        asNode().appendNode("description", "Generates sonars generic issue format based on interlokVerify output")
+        asNode().appendNode("description", "Generates issue format based on interlokVerify output")
         def properties = asNode().appendNode("properties")
         properties.appendNode("tags", "verify,sonar")
         properties.appendNode("license", "false")

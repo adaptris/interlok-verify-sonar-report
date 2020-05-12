@@ -1,17 +1,19 @@
-package com.adaptris.verify.report;
+package com.adaptris.labs.verify.report.sonar;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @NoArgsConstructor
 @AllArgsConstructor
-public class Issues {
+public class Location {
 
   @Getter
   @Setter
-  private List<Issue> issues;
+  private String message;
+
+  @Getter
+  @Setter
+  private String filePath;
 }

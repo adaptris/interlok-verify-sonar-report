@@ -1,9 +1,9 @@
-package com.adaptris.verify;
+package com.adaptris.labs.verify;
 
-import com.adaptris.verify.report.Issue;
-import com.adaptris.verify.report.Issues;
-import com.adaptris.verify.report.Severity;
-import com.adaptris.verify.report.Type;
+import com.adaptris.labs.verify.report.sonar.Issue;
+import com.adaptris.labs.verify.report.sonar.Issues;
+import com.adaptris.labs.verify.report.sonar.Severity;
+import com.adaptris.labs.verify.report.sonar.Type;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.io.FileUtils;
@@ -17,13 +17,13 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CreateSonarReportTest {
+class CreateVerifyReportTest {
 
   @Test
   void createIssues(){
-    CreateSonarReport createSonarReport = new CreateSonarReport();
-    Issues issues = createSonarReport.createIssues(
-      new CreateSonarReport.ArgumentWrapper(
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
+    Issues issues = createVerifyReport.createIssues(
+      new CreateVerifyReport.ArgumentWrapper(
         "engineId",
         "rule",
         "./adapter.xml",
@@ -49,13 +49,13 @@ class CreateSonarReportTest {
 
   @Test
   void parseArgumentsShortHandDefaults() throws Exception {
-    CreateSonarReport createSonarReport = new CreateSonarReport();
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     List<String> args = new ArrayList<>();
     args.add("-f");
     args.add("./file.txt");
     args.add("-o");
     args.add("./out.json");
-    CreateSonarReport.ArgumentWrapper argumentWrapper = createSonarReport.parseArguments(args.toArray(new String[]{}));
+    CreateVerifyReport.ArgumentWrapper argumentWrapper = createVerifyReport.parseArguments(args.toArray(new String[]{}));
     assertEquals("./file.txt", argumentWrapper.getReportFile());
     assertEquals("./out.json", argumentWrapper.getOutputFile());
     assertEquals("interlokVerify", argumentWrapper.getEngineId());
@@ -65,13 +65,13 @@ class CreateSonarReportTest {
 
   @Test
   void parseArgumentsDefaults() throws Exception {
-    CreateSonarReport createSonarReport = new CreateSonarReport();
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     List<String> args = new ArrayList<>();
     args.add("--reportFile");
     args.add("./file.txt");
     args.add("--outputFile");
     args.add("./out.json");
-    CreateSonarReport.ArgumentWrapper argumentWrapper = createSonarReport.parseArguments(args.toArray(new String[]{}));
+    CreateVerifyReport.ArgumentWrapper argumentWrapper = createVerifyReport.parseArguments(args.toArray(new String[]{}));
     assertEquals("./file.txt", argumentWrapper.getReportFile());
     assertEquals("./out.json", argumentWrapper.getOutputFile());
     assertEquals("interlokVerify", argumentWrapper.getEngineId());
@@ -81,7 +81,7 @@ class CreateSonarReportTest {
 
   @Test
   void parseArgumentsShortHandAll() throws Exception {
-    CreateSonarReport createSonarReport = new CreateSonarReport();
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     List<String> args = new ArrayList<>();
     args.add("-f");
     args.add("./file.txt");
@@ -93,7 +93,7 @@ class CreateSonarReportTest {
     args.add("rulz");
     args.add("-l");
     args.add("./adapter.xml");
-    CreateSonarReport.ArgumentWrapper argumentWrapper = createSonarReport.parseArguments(args.toArray(new String[]{}));
+    CreateVerifyReport.ArgumentWrapper argumentWrapper = createVerifyReport.parseArguments(args.toArray(new String[]{}));
     assertEquals("./file.txt", argumentWrapper.getReportFile());
     assertEquals("./out.json", argumentWrapper.getOutputFile());
     assertEquals("thomas", argumentWrapper.getEngineId());
@@ -103,7 +103,7 @@ class CreateSonarReportTest {
 
   @Test
   void parseArgumentsAll() throws Exception {
-    CreateSonarReport createSonarReport = new CreateSonarReport();
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     List<String> args = new ArrayList<>();
     args.add("--reportFile");
     args.add("./file.txt");
@@ -115,7 +115,7 @@ class CreateSonarReportTest {
     args.add("rulz");
     args.add("--locationFilePath");
     args.add("./adapter.xml");
-    CreateSonarReport.ArgumentWrapper argumentWrapper = createSonarReport.parseArguments(args.toArray(new String[]{}));
+    CreateVerifyReport.ArgumentWrapper argumentWrapper = createVerifyReport.parseArguments(args.toArray(new String[]{}));
     assertEquals("./file.txt", argumentWrapper.getReportFile());
     assertEquals("./out.json", argumentWrapper.getOutputFile());
     assertEquals("thomas", argumentWrapper.getEngineId());
@@ -125,55 +125,55 @@ class CreateSonarReportTest {
 
   @Test
   void parseArgumentsShortHandHelp() throws Exception {
-    CreateSonarReport createSonarReport = new CreateSonarReport();
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     List<String> args = new ArrayList<>();
     args.add("-h");
-    CreateSonarReport.ArgumentWrapper argumentWrapper = createSonarReport.parseArguments(args.toArray(new String[]{}));
+    CreateVerifyReport.ArgumentWrapper argumentWrapper = createVerifyReport.parseArguments(args.toArray(new String[]{}));
     assertNull(argumentWrapper);
   }
 
   @Test
   void parseArgumentsHelp() throws Exception {
-    CreateSonarReport createSonarReport = new CreateSonarReport();
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     List<String> args = new ArrayList<>();
     args.add("--help");
-    CreateSonarReport.ArgumentWrapper argumentWrapper = createSonarReport.parseArguments(args.toArray(new String[]{}));
+    CreateVerifyReport.ArgumentWrapper argumentWrapper = createVerifyReport.parseArguments(args.toArray(new String[]{}));
     assertNull(argumentWrapper);
   }
 
   @Test
   void parseArgumentsHelpWithOtherArguments() throws Exception {
-    CreateSonarReport createSonarReport = new CreateSonarReport();
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     List<String> args = new ArrayList<>();
     args.add("--help");
     args.add("--reportFile");
     args.add("./file.txt");
     args.add("--outputFile");
     args.add("./out.json");
-    CreateSonarReport.ArgumentWrapper argumentWrapper = createSonarReport.parseArguments(args.toArray(new String[]{}));
+    CreateVerifyReport.ArgumentWrapper argumentWrapper = createVerifyReport.parseArguments(args.toArray(new String[]{}));
     assertNull(argumentWrapper);
   }
 
 
   @Test()
   void parseArgumentsMissingReport() {
-    CreateSonarReport createSonarReport = new CreateSonarReport();
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     List<String> args = new ArrayList<>();
     args.add("--outputFile");
     args.add("./out.json");
     assertThrows(MissingOptionException.class, () -> {
-      createSonarReport.parseArguments(args.toArray(new String[]{}));
+      createVerifyReport.parseArguments(args.toArray(new String[]{}));
     });
   }
 
   @Test
   void parseArgumentsMissingOutput() {
-    CreateSonarReport createSonarReport = new CreateSonarReport();
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     List<String> args = new ArrayList<>();
     args.add("--reportFile");
     args.add("./report.txt");
     assertThrows(MissingOptionException.class, () -> {
-      createSonarReport.parseArguments(args.toArray(new String[]{}));
+      createVerifyReport.parseArguments(args.toArray(new String[]{}));
     });
   }
 
@@ -188,7 +188,7 @@ class CreateSonarReportTest {
     args.add(reportFile.getAbsolutePath());
     args.add("--outputFile");
     args.add(outputFile.getAbsolutePath());
-    CreateSonarReport.main(args.toArray(new String[]{}));
+    CreateVerifyReport.main(args.toArray(new String[]{}));
     assertTrue(outputFile.exists());
     ObjectMapper mapper = new ObjectMapper();
     Issues issues = mapper.readValue(outputFile, Issues.class);
@@ -216,7 +216,7 @@ class CreateSonarReportTest {
     args.add("--reportFile");
     args.add("./report.txt");
     assertThrows(MissingOptionException.class, () -> {
-      CreateSonarReport.main(args.toArray(new String[]{}));
+      CreateVerifyReport.main(args.toArray(new String[]{}));
     });
   }
 
@@ -232,13 +232,13 @@ class CreateSonarReportTest {
     args.add(reportFile.getAbsolutePath());
     args.add("--outputFile");
     args.add(outputFile.getAbsolutePath());
-    CreateSonarReport.main(args.toArray(new String[]{}));
+    CreateVerifyReport.main(args.toArray(new String[]{}));
     assertFalse(outputFile.exists());
     cleanUpTempDirectory(tmpDir);
   }
 
   private File createTempDirectory() throws IOException {
-    File tempDir = File.createTempFile(CreateSonarReportTest.class.getSimpleName(), "", null);
+    File tempDir = File.createTempFile(CreateVerifyReportTest.class.getSimpleName(), "", null);
     tempDir.delete();
     if (!tempDir.exists()) {
       tempDir.mkdir();

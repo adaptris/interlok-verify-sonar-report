@@ -1,6 +1,6 @@
-package com.adaptris.verify;
+package com.adaptris.labs.verify;
 
-import com.adaptris.verify.report.*;
+import com.adaptris.labs.verify.report.sonar.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class CreateSonarReport {
+public class CreateVerifyReport {
 
   private final Options options;
   private final Options helpOnlyOptions;
@@ -33,7 +33,7 @@ public class CreateSonarReport {
   private static final String RULE_ID_PREFIX_DEFAULT = "rule";
   private static final String LOCATION_FILE_PATH_DEFAULT = "./src/main/interlok/config/adapter.xml";
 
-  CreateSonarReport(){
+  CreateVerifyReport(){
     options = new Options();
     Option help = new Option("h", HELP_ARG, false, "Displays this.." );
     options.addOption(help);
@@ -48,7 +48,7 @@ public class CreateSonarReport {
   }
 
   public static void main(String[] args) throws Exception {
-    CreateSonarReport report = new CreateSonarReport();
+    CreateVerifyReport report = new CreateVerifyReport();
     report.run(args);
   }
 
@@ -106,7 +106,7 @@ public class CreateSonarReport {
 
   private void usage(){
     HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "interlok-create-sonar-report", options );
+    formatter.printHelp( "interlok-verify-report", options );
   }
 
   private String readFile(String path, Charset encoding) throws IOException {
