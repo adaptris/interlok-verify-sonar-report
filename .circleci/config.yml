@@ -165,8 +165,17 @@ workflows:
   version: 2
   on_commit:
     jobs:
-      - build
+      - build:
+          filters:
+            branches:
+              ignore: develop
       - buildjava11
+      - publish:
+          context: nexus-publish
+          filters:
+            branches:
+              only: develop
+
 
   nightly:
     triggers:
