@@ -221,6 +221,24 @@ class CreateVerifyReportTest {
   }
 
   @Test
+  void mainEmptyReport() throws Exception {
+    File tmpDir = createTempDirectory();
+    File outputFile = new File(tmpDir, "out.json");
+    File reportFile = new File(tmpDir, "report.txt");
+    FileUtils.touch(reportFile);
+    List<String> args = new ArrayList<>();
+    args.add("--reportFile");
+    args.add(reportFile.getAbsolutePath());
+    args.add("--outputFile");
+    args.add(outputFile.getAbsolutePath());
+    CreateVerifyReport.main(args.toArray(new String[]{}));
+    ObjectMapper mapper = new ObjectMapper();
+    Issues issues = mapper.readValue(outputFile, Issues.class);
+    assertEquals(0, issues.getIssues().size());
+    cleanUpTempDirectory(tmpDir);
+  }
+
+  @Test
   void mainHelpWithOtherArguments() throws Exception {
     File tmpDir = createTempDirectory();
     File outputFile = new File(tmpDir, "out.json");
