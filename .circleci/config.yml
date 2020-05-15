@@ -169,13 +169,17 @@ workflows:
       - build:
           filters:
             branches:
-              ignore: develop
+              ignore:
+                - develop
+                - master
       - buildjava11
       - publish:
           context: nexus-publish
           filters:
             branches:
-              only: develop
+              only:
+                - develop
+                - master
 
 
   nightly:
