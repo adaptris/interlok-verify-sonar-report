@@ -92,6 +92,7 @@ jobs:
       - run:
           name: Publish
           command: |
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then echo "mavenPublishUrl=${RELEASE_MAVEN_PUBLISH_URL}" >> gradle.properties; fi
             chmod +x ./gradlew
             ./gradlew -PverboseTests=true test publish
 
