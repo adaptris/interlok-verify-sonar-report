@@ -35,11 +35,11 @@ public class CreateVerifyReport {
 
   CreateVerifyReport(){
     options = new Options();
-    Option help = new Option("h", HELP_ARG, false, "Displays this.." );
+    Option help = new Option("h", HELP_ARG, false, "Displays this..");
     options.addOption(help);
     options.addRequiredOption("f", REPORT_FILE_ARG, true, "(required) The verify report file");
     options.addRequiredOption("o", OUTPUT_FILE_ARG, true, "(required) The output file");
-    options.addOption("e", ENGINE_ID_ARG, true, String.format("The engine id (default: %s)",ENGINE_ID_DEFAULT));
+    options.addOption("e", ENGINE_ID_ARG, true, String.format("The engine id (default: %s)", ENGINE_ID_DEFAULT));
     options.addOption("r", RULE_ID_PREFIX_ARG, true, String.format("The rule id prefix (default: %s)", RULE_ID_PREFIX_DEFAULT));
     options.addOption("l", LOCATION_FILE_PATH_ARG, true, String.format("The location file path (default: %s)", LOCATION_FILE_PATH_DEFAULT));
 
@@ -106,7 +106,7 @@ public class CreateVerifyReport {
 
   private void usage(){
     HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp( "interlok-verify-report", options );
+    formatter.printHelp("interlok-verify-report", options);
   }
 
   private String readFile(String path, Charset encoding) throws IOException {
