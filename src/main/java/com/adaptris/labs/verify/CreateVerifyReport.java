@@ -14,8 +14,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CreateVerifyReport {
 
@@ -33,7 +37,7 @@ public class CreateVerifyReport {
   private static final String RULE_ID_PREFIX_DEFAULT = "rule";
   private static final String LOCATION_FILE_PATH_DEFAULT = "./src/main/interlok/config/adapter.xml";
 
-  CreateVerifyReport(){
+  CreateVerifyReport() {
     options = new Options();
     Option help = new Option("h", HELP_ARG, false, "Displays this..");
     options.addOption(help);
@@ -54,7 +58,7 @@ public class CreateVerifyReport {
 
   void run(String[] args) throws IOException, ParseException {
     ArgumentWrapper argumentWrapper = parseArguments(args);
-    if(argumentWrapper != null) {
+    if (argumentWrapper != null) {
       ObjectMapper mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
       Issues issues = createIssues(argumentWrapper, readFile(argumentWrapper.getReportFile(), StandardCharsets.UTF_8));
@@ -66,7 +70,7 @@ public class CreateVerifyReport {
     CommandLineParser parser = new DefaultParser();
     try {
       CommandLine helpCommandLine = parser.parse(helpOnlyOptions, args, true);
-      if(helpCommandLine.hasOption(HELP_ARG)){
+      if (helpCommandLine.hasOption(HELP_ARG)) {
         usage();
         return null;
       }
@@ -86,25 +90,36 @@ public class CreateVerifyReport {
 
   Issues createIssues(ArgumentWrapper argumentWrapper, String report) {
     List<Issue> issueList = new ArrayList<>();
-    try(Scanner scanner = new Scanner(report)) {
+    try (Scanner scanner = new Scanner(report)) {
       int i = 1;
       while (scanner.hasNextLine()) {
         String line = scanner.nextLine();
-        issueList.add(new Issue(
-          argumentWrapper.getEngineId(),
-          String.format("%s%s", argumentWrapper.getRuleIdPrefix(), i++),
-          Severity.INFO,
-          Type.CODE_SMELL,
-          new Location(
-            line,
-            argumentWrapper.getLocationFilePath())
-        ));
+        String types = Arrays.stream(Type.values())
+          .map(Object::toString)
+          .collect(Collectors.joining("|"));
+        String severities = Arrays.stream(Severity.values())
+          .map(Object::toString)
+          .collect(Collectors.joining("|"));
+        String regex = "^(?<type>" + types + "),(?<severity>" + severities + "),(?<message>.*)$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find( )) {
+          issueList.add(new Issue(
+            argumentWrapper.getEngineId(),
+            String.format("%s%s", argumentWrapper.getRuleIdPrefix(), i++),
+            Severity.valueOf(matcher.group("severity")),
+            Type.valueOf(matcher.group("type")),
+            new Location(
+              matcher.group("message"),
+              argumentWrapper.getLocationFilePath())
+          ));
+        }
       }
     }
     return new Issues(issueList);
   }
 
-  private void usage(){
+  private void usage() {
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp("interlok-verify-report", options);
   }
