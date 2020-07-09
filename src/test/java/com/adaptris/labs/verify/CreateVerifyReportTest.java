@@ -28,9 +28,7 @@ class CreateVerifyReportTest {
         "rule",
         "./adapter.xml",
         "report.txt",
-        "report.json",
-        "",
-        true),
+        "report.json"),
       "something\nsomething2");
     assertEquals(2, issues.getIssues().size());
     Issue issue1 = issues.getIssues().get(0);
@@ -47,52 +45,6 @@ class CreateVerifyReportTest {
     assertEquals(Severity.INFO, issue2.getSeverity());
     assertEquals("./adapter.xml", issue2.getPrimaryLocation().getFilePath());
     assertEquals("something2", issue2.getPrimaryLocation().getMessage());
-  }
-
-  @Test
-  void createIssuesWithFilter(){
-    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
-    Issues issues = createVerifyReport.createIssues(
-      new CreateVerifyReport.ArgumentWrapper(
-        "engineId",
-        "rule",
-        "./adapter.xml",
-        "report.txt",
-        "report.json",
-        "VERIFY_REPORT: ",
-        false),
-      "something\nVERIFY_REPORT: something2");
-    assertEquals(1, issues.getIssues().size());
-    Issue issue = issues.getIssues().get(0);
-    assertEquals("engineId", issue.getEngineId());
-    assertEquals("rule1", issue.getRuleId());
-    assertEquals(Type.CODE_SMELL, issue.getType());
-    assertEquals(Severity.INFO, issue.getSeverity());
-    assertEquals("./adapter.xml", issue.getPrimaryLocation().getFilePath());
-    assertEquals("VERIFY_REPORT: something2", issue.getPrimaryLocation().getMessage());
-  }
-
-  @Test
-  void createIssuesWithFilterRemoveLineFilter(){
-    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
-    Issues issues = createVerifyReport.createIssues(
-      new CreateVerifyReport.ArgumentWrapper(
-        "engineId",
-        "rule",
-        "./adapter.xml",
-        "report.txt",
-        "report.json",
-        "VERIFY_REPORT: ",
-        true),
-      "something\nVERIFY_REPORT: something2");
-    assertEquals(1, issues.getIssues().size());
-    Issue issue = issues.getIssues().get(0);
-    assertEquals("engineId", issue.getEngineId());
-    assertEquals("rule1", issue.getRuleId());
-    assertEquals(Type.CODE_SMELL, issue.getType());
-    assertEquals(Severity.INFO, issue.getSeverity());
-    assertEquals("./adapter.xml", issue.getPrimaryLocation().getFilePath());
-    assertEquals("something2", issue.getPrimaryLocation().getMessage());
   }
 
   @Test
