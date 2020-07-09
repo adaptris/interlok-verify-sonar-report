@@ -28,10 +28,8 @@ class CreateVerifyReportTest {
         "rule",
         "./adapter.xml",
         "report.txt",
-        "report.json",
-        "",
-        true),
-      "something\nsomething2");
+        "report.json"),
+      "CODE_SMELL,INFO,something\nCODE_SMELL,INFO,something2");
     assertEquals(2, issues.getIssues().size());
     Issue issue1 = issues.getIssues().get(0);
     assertEquals("engineId", issue1.getEngineId());
@@ -50,7 +48,7 @@ class CreateVerifyReportTest {
   }
 
   @Test
-  void createIssuesWithFilter(){
+  void createIssuesInvalidInput(){
     CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     Issues issues = createVerifyReport.createIssues(
       new CreateVerifyReport.ArgumentWrapper(
@@ -58,41 +56,16 @@ class CreateVerifyReportTest {
         "rule",
         "./adapter.xml",
         "report.txt",
-        "report.json",
-        "VERIFY_REPORT: ",
-        false),
-      "something\nVERIFY_REPORT: something2");
+        "report.json"),
+      "CODE_SMELL,INFO,something\nINVALID,INFO,something2");
     assertEquals(1, issues.getIssues().size());
-    Issue issue = issues.getIssues().get(0);
-    assertEquals("engineId", issue.getEngineId());
-    assertEquals("rule1", issue.getRuleId());
-    assertEquals(Type.CODE_SMELL, issue.getType());
-    assertEquals(Severity.INFO, issue.getSeverity());
-    assertEquals("./adapter.xml", issue.getPrimaryLocation().getFilePath());
-    assertEquals("VERIFY_REPORT: something2", issue.getPrimaryLocation().getMessage());
-  }
-
-  @Test
-  void createIssuesWithFilterRemoveLineFilter(){
-    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
-    Issues issues = createVerifyReport.createIssues(
-      new CreateVerifyReport.ArgumentWrapper(
-        "engineId",
-        "rule",
-        "./adapter.xml",
-        "report.txt",
-        "report.json",
-        "VERIFY_REPORT: ",
-        true),
-      "something\nVERIFY_REPORT: something2");
-    assertEquals(1, issues.getIssues().size());
-    Issue issue = issues.getIssues().get(0);
-    assertEquals("engineId", issue.getEngineId());
-    assertEquals("rule1", issue.getRuleId());
-    assertEquals(Type.CODE_SMELL, issue.getType());
-    assertEquals(Severity.INFO, issue.getSeverity());
-    assertEquals("./adapter.xml", issue.getPrimaryLocation().getFilePath());
-    assertEquals("something2", issue.getPrimaryLocation().getMessage());
+    Issue issue1 = issues.getIssues().get(0);
+    assertEquals("engineId", issue1.getEngineId());
+    assertEquals("rule1", issue1.getRuleId());
+    assertEquals(Type.CODE_SMELL, issue1.getType());
+    assertEquals(Severity.INFO, issue1.getSeverity());
+    assertEquals("./adapter.xml", issue1.getPrimaryLocation().getFilePath());
+    assertEquals("something", issue1.getPrimaryLocation().getMessage());
   }
 
   @Test
@@ -230,7 +203,7 @@ class CreateVerifyReportTest {
     File tmpDir = createTempDirectory();
     File outputFile = new File(tmpDir, "out.json");
     File reportFile = new File(tmpDir, "report.txt");
-    FileUtils.writeStringToFile(reportFile, "something\nsomething else", StandardCharsets.UTF_8);
+    FileUtils.writeStringToFile(reportFile, "CODE_SMELL,INFO,something\nCODE_SMELL,INFO,something else", StandardCharsets.UTF_8);
     List<String> args = new ArrayList<>();
     args.add("--reportFile");
     args.add(reportFile.getAbsolutePath());

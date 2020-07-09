@@ -14,8 +14,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CreateVerifyReport {
 
@@ -28,16 +32,12 @@ public class CreateVerifyReport {
   private static final String ENGINE_ID_ARG = "engineId";
   private static final String RULE_ID_PREFIX_ARG = "ruleIdPrefix";
   private static final String LOCATION_FILE_PATH_ARG = "locationFilePath";
-  private static final String INC_ONLY_LINES_STARTING = "includeOnlyLinesStarting";
-  private static final String REMOVE_LINE_STARTING_STRING = "removeIncludeOnlyLineFilter";
 
   private static final String ENGINE_ID_DEFAULT = "interlokVerify";
   private static final String RULE_ID_PREFIX_DEFAULT = "rule";
   private static final String LOCATION_FILE_PATH_DEFAULT = "./src/main/interlok/config/adapter.xml";
-  private static final String INC_ONLY_LINES_STARTING_DEFAULT = "";
-  private static final String REMOVE_LINE_STARTING_STRING_DEFAULT = "true";
 
-  CreateVerifyReport(){
+  CreateVerifyReport() {
     options = new Options();
     Option help = new Option("h", HELP_ARG, false, "Displays this..");
     options.addOption(help);
@@ -46,8 +46,6 @@ public class CreateVerifyReport {
     options.addOption("e", ENGINE_ID_ARG, true, String.format("The engine id (default: %s)", ENGINE_ID_DEFAULT));
     options.addOption("r", RULE_ID_PREFIX_ARG, true, String.format("The rule id prefix (default: %s)", RULE_ID_PREFIX_DEFAULT));
     options.addOption("l", LOCATION_FILE_PATH_ARG, true, String.format("The location file path (default: %s)", LOCATION_FILE_PATH_DEFAULT));
-    options.addOption("i", INC_ONLY_LINES_STARTING, true, String.format("Include only lines starting with input (default: %s)", INC_ONLY_LINES_STARTING_DEFAULT));
-    options.addOption("s", REMOVE_LINE_STARTING_STRING, true, String.format("Remove include only line filter (default: %s)", REMOVE_LINE_STARTING_STRING_DEFAULT));
 
     helpOnlyOptions = new Options();
     helpOnlyOptions.addOption(help);
@@ -60,7 +58,7 @@ public class CreateVerifyReport {
 
   void run(String[] args) throws IOException, ParseException {
     ArgumentWrapper argumentWrapper = parseArguments(args);
-    if(argumentWrapper != null) {
+    if (argumentWrapper != null) {
       ObjectMapper mapper = new ObjectMapper();
       mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
       Issues issues = createIssues(argumentWrapper, readFile(argumentWrapper.getReportFile(), StandardCharsets.UTF_8));
@@ -72,7 +70,7 @@ public class CreateVerifyReport {
     CommandLineParser parser = new DefaultParser();
     try {
       CommandLine helpCommandLine = parser.parse(helpOnlyOptions, args, true);
-      if(helpCommandLine.hasOption(HELP_ARG)){
+      if (helpCommandLine.hasOption(HELP_ARG)) {
         usage();
         return null;
       }
@@ -82,9 +80,7 @@ public class CreateVerifyReport {
         line.getOptionValue(RULE_ID_PREFIX_ARG, RULE_ID_PREFIX_DEFAULT),
         line.getOptionValue(LOCATION_FILE_PATH_ARG, LOCATION_FILE_PATH_DEFAULT),
         line.getOptionValue(REPORT_FILE_ARG),
-        line.getOptionValue(OUTPUT_FILE_ARG),
-        line.getOptionValue(INC_ONLY_LINES_STARTING, INC_ONLY_LINES_STARTING_DEFAULT),
-        Boolean.parseBoolean(line.getOptionValue(REMOVE_LINE_STARTING_STRING, REMOVE_LINE_STARTING_STRING_DEFAULT))
+        line.getOptionValue(OUTPUT_FILE_ARG)
       );
     } catch (ParseException e) {
       usage();
@@ -94,18 +90,27 @@ public class CreateVerifyReport {
 
   Issues createIssues(ArgumentWrapper argumentWrapper, String report) {
     List<Issue> issueList = new ArrayList<>();
-    try(Scanner scanner = new Scanner(report)) {
+    try (Scanner scanner = new Scanner(report)) {
       int i = 1;
       while (scanner.hasNextLine()) {
         String line = scanner.nextLine();
-        if (line.startsWith(argumentWrapper.getIncludeOnlyLinesStarting())) {
+        String types = Arrays.stream(Type.values())
+          .map(Object::toString)
+          .collect(Collectors.joining("|"));
+        String severities = Arrays.stream(Severity.values())
+          .map(Object::toString)
+          .collect(Collectors.joining("|"));
+        String regex = "^(?<type>" + types + "),(?<severity>" + severities + "),(?<message>.*)$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(line);
+        if (matcher.find( )) {
           issueList.add(new Issue(
             argumentWrapper.getEngineId(),
             String.format("%s%s", argumentWrapper.getRuleIdPrefix(), i++),
-            Severity.INFO,
-            Type.CODE_SMELL,
+            Severity.valueOf(matcher.group("severity")),
+            Type.valueOf(matcher.group("type")),
             new Location(
-              argumentWrapper.getRemoveIncludeOnlyLineFilter() ? line.substring(argumentWrapper.getIncludeOnlyLinesStarting().length()) : line,
+              matcher.group("message"),
               argumentWrapper.getLocationFilePath())
           ));
         }
@@ -114,7 +119,7 @@ public class CreateVerifyReport {
     return new Issues(issueList);
   }
 
-  private void usage(){
+  private void usage() {
     HelpFormatter formatter = new HelpFormatter();
     formatter.printHelp("interlok-verify-report", options);
   }
@@ -141,12 +146,6 @@ public class CreateVerifyReport {
 
     @Getter
     private final String outputFile;
-
-    @Getter
-    private final String includeOnlyLinesStarting;
-
-    @Getter
-    private final boolean removeIncludeOnlyLineFilter;
   }
 
 }
