@@ -15,7 +15,7 @@ plugins {
 }
 
 ext {
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '2.0.0'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '2.1-SNAPSHOT'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   repoUsername = project.hasProperty('repoUsername') ? project.getProperty('repoUsername') : 'unknown'
