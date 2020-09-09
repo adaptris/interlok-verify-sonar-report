@@ -177,16 +177,3 @@ workflows:
               only:
                 - develop
                 - master
-
-
-  nightly:
-    triggers:
-      - schedule:
-          cron: "00 06 * * *"
-          filters:
-            branches:
-              only:
-                - develop
-    jobs:
-      - publish:
-          context: nexus-publish
