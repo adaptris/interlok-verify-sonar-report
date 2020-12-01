@@ -6,3 +6,7 @@ update_configs:
     update_schedule: "daily"
     default_reviewers:
       - mcwarman
+      - quotidian-ennui
+      - aaron-mcgrath-adp
+      - sebastien-belin-adp
+      - higgyfella
