@@ -65,14 +65,14 @@ class CreateVerifyReportTest {
     assertEquals(Type.CODE_SMELL, issue1.getType());
     assertEquals(Severity.INFO, issue1.getSeverity());
     assertEquals("./adapter.xml", issue1.getPrimaryLocation().getFilePath());
-    assertEquals("something", issue1.getPrimaryLocation().getMessage());
+    assertEquals("Interlok Validation Error:something", issue1.getPrimaryLocation().getMessage());
     Issue issue2 = issues.getIssues().get(1);
     assertEquals("engineId", issue2.getEngineId());
     assertEquals("interlok_validation_error", issue2.getRuleId());
     assertEquals(Type.CODE_SMELL, issue2.getType());
     assertEquals(Severity.INFO, issue2.getSeverity());
     assertEquals("./adapter.xml", issue2.getPrimaryLocation().getFilePath());
-    assertEquals("something2", issue2.getPrimaryLocation().getMessage());
+    assertEquals("Interlok Validation Error:something2", issue2.getPrimaryLocation().getMessage());
   }
 
   @Test
