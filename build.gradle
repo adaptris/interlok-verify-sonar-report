@@ -9,13 +9,13 @@ plugins {
   id 'application'
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '5.0.3'
-  id 'com.github.spotbugs' version '4.4.4'
-  id "io.freefair.lombok" version "5.1.0"
-  id 'org.owasp.dependencycheck' version '5.3.2.1'
+  id 'com.github.spotbugs' version '4.6.0'
+  id "io.freefair.lombok" version "5.3.0"
+  id 'org.owasp.dependencycheck' version '6.0.3'
 }
 
 ext {
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '2.0.0'
+  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '2.1.0'
   nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
   mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
   repoUsername = project.hasProperty('repoUsername') ? project.getProperty('repoUsername') : 'unknown'
@@ -82,7 +82,8 @@ ext.buildInfo = { ->
     }
 }
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 group   = 'com.adaptris.labs'
 version = releaseVersion
 applicationName = 'interlok-verify-report'
@@ -110,13 +111,13 @@ configurations.all {
 }
 
 dependencies {
-  compile ('com.fasterxml.jackson.core:jackson-databind:2.11.1')
+  compile ('com.fasterxml.jackson.core:jackson-databind:2.12.0')
   compile ('commons-cli:commons-cli:1.4')
 
   umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
 
-  testCompile ('org.junit.jupiter:junit-jupiter-engine:5.6.2')
-  testCompile ('commons-io:commons-io:2.7')
+  testCompile ('org.junit.jupiter:junit-jupiter-engine:5.7.0')
+  testCompile ('commons-io:commons-io:2.8.0')
 
 }
 
@@ -317,4 +318,3 @@ javadoc.dependsOn umlJavadoc
 processTestResources.dependsOn buildUnitTestProperties
 clean.dependsOn deleteGeneratedFiles,deleteDerbyLog
 check.dependsOn jacocoTestReport
-

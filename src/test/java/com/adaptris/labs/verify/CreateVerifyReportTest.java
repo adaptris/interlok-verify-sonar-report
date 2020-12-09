@@ -48,6 +48,34 @@ class CreateVerifyReportTest {
   }
 
   @Test
+  void createIssuesWithRuleType(){
+    CreateVerifyReport createVerifyReport = new CreateVerifyReport();
+    Issues issues = createVerifyReport.createIssues(
+      new CreateVerifyReport.ArgumentWrapper(
+        "engineId",
+        "rule",
+        "./adapter.xml",
+        "report.txt",
+        "report.json"),
+      "CODE_SMELL,INFO,Interlok Validation Error:something\nCODE_SMELL,INFO,Interlok Validation Error:something2");
+    assertEquals(2, issues.getIssues().size());
+    Issue issue1 = issues.getIssues().get(0);
+    assertEquals("engineId", issue1.getEngineId());
+    assertEquals("interlok_validation_error", issue1.getRuleId());
+    assertEquals(Type.CODE_SMELL, issue1.getType());
+    assertEquals(Severity.INFO, issue1.getSeverity());
+    assertEquals("./adapter.xml", issue1.getPrimaryLocation().getFilePath());
+    assertEquals("Interlok Validation Error:something", issue1.getPrimaryLocation().getMessage());
+    Issue issue2 = issues.getIssues().get(1);
+    assertEquals("engineId", issue2.getEngineId());
+    assertEquals("interlok_validation_error", issue2.getRuleId());
+    assertEquals(Type.CODE_SMELL, issue2.getType());
+    assertEquals(Severity.INFO, issue2.getSeverity());
+    assertEquals("./adapter.xml", issue2.getPrimaryLocation().getFilePath());
+    assertEquals("Interlok Validation Error:something2", issue2.getPrimaryLocation().getMessage());
+  }
+
+  @Test
   void createIssuesInvalidInput(){
     CreateVerifyReport createVerifyReport = new CreateVerifyReport();
     Issues issues = createVerifyReport.createIssues(

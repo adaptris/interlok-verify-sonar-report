@@ -1,12 +1,5 @@
 package com.adaptris.labs.verify;
 
-import com.adaptris.labs.verify.report.sonar.*;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.apache.commons.cli.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -16,10 +9,27 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import com.adaptris.labs.verify.report.sonar.Issue;
+import com.adaptris.labs.verify.report.sonar.Issues;
+import com.adaptris.labs.verify.report.sonar.Location;
+import com.adaptris.labs.verify.report.sonar.Severity;
+import com.adaptris.labs.verify.report.sonar.Type;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 public class CreateVerifyReport {
 
@@ -36,7 +46,20 @@ public class CreateVerifyReport {
   private static final String ENGINE_ID_DEFAULT = "interlokVerify";
   private static final String RULE_ID_PREFIX_DEFAULT = "rule";
   private static final String LOCATION_FILE_PATH_DEFAULT = "./src/main/interlok/config/adapter.xml";
+  private static final String REGEX_TYPES =
+      Arrays.stream(Type.values()).map(Object::toString).collect(Collectors.joining("|"));
+  private static final String REGEX_SEVERITIES =
+      Arrays.stream(Severity.values()).map(Object::toString).collect(Collectors.joining("|"));
 
+  private static final String REGEX_RULES = "^(?<type>" + REGEX_TYPES + "),(?<severity>"
+      + REGEX_SEVERITIES + "),(?<message>(?<rule>[^:]+):.*)$";
+
+  private static final String REGEX_MESSAGE_ONLY =
+      "^(?<type>" + REGEX_TYPES + "),(?<severity>" + REGEX_SEVERITIES + "),(?<message>.*)$";
+  
+  private transient Pattern rulePattern;
+  private transient Pattern messagePattern;
+  
   CreateVerifyReport() {
     options = new Options();
     Option help = new Option("h", HELP_ARG, false, "Displays this..");
@@ -49,6 +72,8 @@ public class CreateVerifyReport {
 
     helpOnlyOptions = new Options();
     helpOnlyOptions.addOption(help);
+    rulePattern = Pattern.compile(REGEX_RULES);
+    messagePattern = Pattern.compile(REGEX_MESSAGE_ONLY);
   }
 
   public static void main(String[] args) throws Exception {
@@ -94,29 +119,32 @@ public class CreateVerifyReport {
       int i = 1;
       while (scanner.hasNextLine()) {
         String line = scanner.nextLine();
-        String types = Arrays.stream(Type.values())
-          .map(Object::toString)
-          .collect(Collectors.joining("|"));
-        String severities = Arrays.stream(Severity.values())
-          .map(Object::toString)
-          .collect(Collectors.joining("|"));
-        String regex = "^(?<type>" + types + "),(?<severity>" + severities + "),(?<message>.*)$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(line);
-        if (matcher.find( )) {
-          issueList.add(new Issue(
-            argumentWrapper.getEngineId(),
-            String.format("%s%s", argumentWrapper.getRuleIdPrefix(), i++),
-            Severity.valueOf(matcher.group("severity")),
-            Type.valueOf(matcher.group("type")),
-            new Location(
-              matcher.group("message"),
-              argumentWrapper.getLocationFilePath())
-          ));
-        }
+        createIssue(argumentWrapper, line, i++).ifPresent(issueList::add);
       }
     }
     return new Issues(issueList);
+  }
+  
+  private Optional<Issue> createIssue(ArgumentWrapper argumentWrapper,String line, int count) {
+    Matcher ruleMatcher = rulePattern.matcher(line);
+    Matcher msgMatcher = messagePattern.matcher(line);
+    if (ruleMatcher.matches()) {
+      return Optional.of(new Issue(argumentWrapper.getEngineId(), ruleMatcher.group("rule").replace(" ", "_").toLowerCase(),
+          Severity.valueOf(ruleMatcher.group("severity")),
+          Type.valueOf(ruleMatcher.group("type")),
+          new Location(
+              ruleMatcher.group("message"),
+              argumentWrapper.getLocationFilePath())));
+    } else if (msgMatcher.matches()){
+      return Optional.of(new Issue(argumentWrapper.getEngineId(), 
+          argumentWrapper.getRuleIdPrefix() + count,
+          Severity.valueOf(msgMatcher.group("severity")),
+          Type.valueOf(msgMatcher.group("type")),
+          new Location(
+              msgMatcher.group("message"),
+              argumentWrapper.getLocationFilePath())));
+    }
+    return Optional.empty();
   }
 
   private void usage() {
