@@ -52,10 +52,10 @@ public class CreateVerifyReport {
       Arrays.stream(Severity.values()).map(Object::toString).collect(Collectors.joining("|"));
 
   private static final String REGEX_RULES = "^(?<type>" + REGEX_TYPES + "),(?<severity>"
-      + REGEX_SEVERITIES + "),(?<message>(?<rule>[^:]+).*)$";
+      + REGEX_SEVERITIES + "),(?<message>(?<rule>[^:]+):.*)$";
 
   private static final String REGEX_MESSAGE_ONLY =
-      "^(?<type>" + REGEX_TYPES + "),(?<severity>" + REGEX_TYPES + "),(?<message>.*)$";
+      "^(?<type>" + REGEX_TYPES + "),(?<severity>" + REGEX_SEVERITIES + "),(?<message>.*)$";
   
   private transient Pattern rulePattern;
   private transient Pattern messagePattern;
@@ -119,7 +119,7 @@ public class CreateVerifyReport {
       int i = 1;
       while (scanner.hasNextLine()) {
         String line = scanner.nextLine();
-        createIssue(argumentWrapper, line, i++).ifPresent((issue) -> issueList.add(issue));
+        createIssue(argumentWrapper, line, i++).ifPresent(issueList::add);
       }
     }
     return new Issues(issueList);
