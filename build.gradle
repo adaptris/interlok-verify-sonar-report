@@ -22,7 +22,8 @@ ext {
   repoPassword = project.hasProperty('repoPassword') ? project.getProperty('repoPassword') : 'unknown'
   defaultNexusRepo = project.hasProperty('defaultNexusRepo') ? project.getProperty('defaultNexusRepo') : 'https://repo1.maven.org/maven2/'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  componentName='Interlok - Verify Report'
+  componentName='Interlok Build/Verify Report'
+  componentDesc="Generates issue format based on interlokVerify output"
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
 }
@@ -146,6 +147,7 @@ task generateVersion {
     versionFile.getParentFile().mkdirs()
     ant.propertyfile(file: versionFile) {
       entry(key: 'component.name', value: componentName)
+      entry(key: 'component.description', value: componentDesc)
       entry(key: 'groupId', value: project.group)
       entry(key: 'artifactId', value: project.name)
       entry(key: 'build.version', value: releaseVersion)
@@ -270,7 +272,7 @@ publishing {
 
       pom.withXml {
         asNode().appendNode("name", componentName)
-        asNode().appendNode("description", "Generates issue format based on interlokVerify output")
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("tags", "verify,sonar")
         properties.appendNode("license", "false")
