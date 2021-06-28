@@ -3,7 +3,6 @@ import org.apache.tools.ant.filters.*
 
 plugins {
   id 'java'
-  id 'maven'
   id 'maven-publish'
   id 'jacoco'
   id 'application'
@@ -15,13 +14,14 @@ plugins {
 }
 
 ext {
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '2.2-SNAPSHOT'
-  nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
-  mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
-  repoUsername = project.hasProperty('repoUsername') ? project.getProperty('repoUsername') : 'unknown'
-  repoPassword = project.hasProperty('repoPassword') ? project.getProperty('repoPassword') : 'unknown'
-  defaultNexusRepo = project.hasProperty('defaultNexusRepo') ? project.getProperty('defaultNexusRepo') : 'https://repo1.maven.org/maven2/'
+  releaseVersion = project.findProperty('releaseVersion') ?: '2.2-SNAPSHOT'
+  nexusBaseUrl = project.findProperty('nexusBaseUrl') ?: 'https://nexus.adaptris.net/nexus'
+  mavenPublishUrl = project.findProperty('mavenPublishUrl') ?: nexusBaseUrl + '/content/repositories/snapshots'
+  repoUsername = project.findProperty('repoUsername') ?: 'set in gradle.properties'
+  repoPassword = project.findProperty('repoPassword') ?: 'set in gradle.properties'
+  defaultNexusRepo = project.findProperty('defaultNexusRepo') ?: 'unknown'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
+
   componentName='Interlok Build/Verify Report'
   componentDesc="Generates issue format based on interlokVerify output"
   organizationName = "Adaptris Ltd"
@@ -57,13 +57,6 @@ ext.hasGraphViz = { ->
   }
 }
 
-if (JavaVersion.current().isJava8Compatible()) {
-  allprojects {
-    tasks.withType(Javadoc) {
-      options.addStringOption('Xdoclint:none', '-quiet')
-    }
-  }
-}
 ext.gitBranchNameOrTimestamp = { branchName ->
   if (branchName.equals("HEAD") || branchName.equals("develop") || branchName.startsWith("release")) {
     return new Date().format('HH:mm:ss z');
@@ -94,8 +87,20 @@ distZip.enabled=false
 generateLombokConfig.enabled = false
 def versionDir = "$buildDir/version"
 
+// Disable gradle module generation since we probably don't want
+// xxx.module files in your repository.
+tasks.withType(GenerateModuleMetadata) {
+  enabled = false
+}
+
 repositories {
   mavenCentral()
+  if (defaultNexusRepo != "unknown") {
+    maven {
+      url "$defaultNexusRepo"
+      allowInsecureProtocol true
+    }
+  }
   maven { url "$defaultNexusRepo" }
   maven { url "$nexusBaseUrl/content/groups/public" }
   maven { url "$nexusBaseUrl/content/groups/interlok" }
@@ -112,13 +117,13 @@ configurations.all {
 }
 
 dependencies {
-  compile ('com.fasterxml.jackson.core:jackson-databind:2.12.3')
-  compile ('commons-cli:commons-cli:1.4')
+  implementation ('com.fasterxml.jackson.core:jackson-databind:2.12.3')
+  implementation ('commons-cli:commons-cli:1.4')
 
   umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
 
-  testCompile ('org.junit.jupiter:junit-jupiter-engine:5.7.2')
-  testCompile ('commons-io:commons-io:2.10.0')
+  testImplementation ('org.junit.jupiter:junit-jupiter-engine:5.7.2')
+  testImplementation ('commons-io:commons-io:2.10.0')
 
 }
 
@@ -225,6 +230,7 @@ task umlJavadoc(type: Javadoc) {
   configure(options) {
     options.docletpath = configurations.umlDoclet.files.asType(List)
     options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
+    options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption "umlBasePath", destinationDir.getCanonicalPath()
     options.addStringOption "umlImageFormat", "SVG"
     options.addStringOption "umlExcludedReferences", "java.lang.Exception,java.lang.Object,java.lang.Enum"
@@ -314,6 +320,17 @@ spotbugsTest.enabled = false
 
 installDist {
   destinationDir = new File(project.buildDir, 'staged')
+}
+
+dependencyCheck  {
+  suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" ]
+  scanConfigurations = [ "api", "compileClasspath", "runtimeClasspath" ]
+  formats = [ "HTML", "JUNIT" ]
+  junitFailOnCVSS = 7.0
+  failBuildOnCVSS = 7.0
+  analyzers {
+    assemblyEnabled=false
+  }
 }
 
 javadoc.dependsOn umlJavadoc
