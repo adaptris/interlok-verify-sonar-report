@@ -9,7 +9,7 @@ plugins {
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '6.0.0'
   id 'com.github.spotbugs' version '4.7.4'
-  id "io.freefair.lombok" version "5.3.3.3"
+  id "io.freefair.lombok" version "6.1.0"
   id 'org.owasp.dependencycheck' version '6.3.1'
 }
 
@@ -84,7 +84,7 @@ applicationName = 'interlok-verify-report'
 mainClassName  = 'com.adaptris.labs.verify.CreateVerifyReport'
 distTar.enabled=false
 distZip.enabled=false
-generateLombokConfig.enabled = false
+lombok.disableConfig = true
 def versionDir = "$buildDir/version"
 
 // Disable gradle module generation since we probably don't want
