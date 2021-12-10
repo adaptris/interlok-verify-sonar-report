@@ -315,10 +315,11 @@ spotbugsMain {
   // ignoreFailures = false
   reports {
     xml {
-      enabled = false
+      required.set(false)
     }
     html {
-      enabled = true
+      required.set(true)
+      stylesheet = 'default.xsl'
     }
   }
   // includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
