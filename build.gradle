@@ -8,7 +8,7 @@ plugins {
   id 'application'
   // Manage optional dependencies in maven pom.
   id 'nebula.optional-base' version '7.0.0'
-  id 'com.github.spotbugs' version '5.0.1'
+  id 'com.github.spotbugs' version '5.0.2'
   id "io.freefair.lombok" version "6.3.0"
   id 'org.owasp.dependencycheck' version '6.5.0.1'
 }
@@ -315,10 +315,11 @@ spotbugsMain {
   // ignoreFailures = false
   reports {
     xml {
-      enabled = false
+      required.set(false)
     }
     html {
-      enabled = true
+      required.set(true)
+      stylesheet = 'default.xsl'
     }
   }
   // includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
