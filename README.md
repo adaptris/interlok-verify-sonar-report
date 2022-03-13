@@ -25,7 +25,7 @@ The report generation has also been added to the [interlok-build-parent][interlo
 sonarqube {
   properties {
     property "sonar.projectKey", "adaptris-labs_interlok-hello-world"
-    property "sonar.organization", "adaptris"
+    property "sonar.organization", "adaptris-labs"
     property "sonar.host.url", "https://sonarcloud.io"
     property "sonar.sourceEncoding", "UTF-8"
     property "sonar.sources", "./src/main/interlok"
