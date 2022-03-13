@@ -3,26 +3,27 @@ import org.apache.tools.ant.filters.*
 
 plugins {
   id 'java'
-  id 'maven'
   id 'maven-publish'
   id 'jacoco'
   id 'application'
   // Manage optional dependencies in maven pom.
-  id 'nebula.optional-base' version '5.0.3'
-  id 'com.github.spotbugs' version '4.6.0'
-  id "io.freefair.lombok" version "5.3.0"
-  id 'org.owasp.dependencycheck' version '6.0.3'
+  id 'nebula.optional-base' version '7.0.0'
+  id 'com.github.spotbugs' version '5.0.6'
+  id "io.freefair.lombok" version "6.4.1"
+  id 'org.owasp.dependencycheck' version '6.5.3'
 }
 
 ext {
-  releaseVersion = project.hasProperty('releaseVersion') ? project.getProperty('releaseVersion') : '2.1.0'
-  nexusBaseUrl = project.hasProperty('nexusBaseUrl') ? project.getProperty('nexusBaseUrl') : 'https://nexus.adaptris.net/nexus'
-  mavenPublishUrl = project.hasProperty('mavenPublishUrl') ? project.getProperty('mavenPublishUrl') : nexusBaseUrl + '/content/repositories/snapshots'
-  repoUsername = project.hasProperty('repoUsername') ? project.getProperty('repoUsername') : 'unknown'
-  repoPassword = project.hasProperty('repoPassword') ? project.getProperty('repoPassword') : 'unknown'
-  defaultNexusRepo = project.hasProperty('defaultNexusRepo') ? project.getProperty('defaultNexusRepo') : 'https://repo1.maven.org/maven2/'
+  releaseVersion = project.findProperty('releaseVersion') ?: '2.2-SNAPSHOT'
+  nexusBaseUrl = project.findProperty('nexusBaseUrl') ?: 'https://nexus.adaptris.net/nexus'
+  mavenPublishUrl = project.findProperty('mavenPublishUrl') ?: nexusBaseUrl + '/content/repositories/snapshots'
+  repoUsername = project.findProperty('repoUsername') ?: 'set in gradle.properties'
+  repoPassword = project.findProperty('repoPassword') ?: 'set in gradle.properties'
+  defaultNexusRepo = project.findProperty('defaultNexusRepo') ?: 'unknown'
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
-  componentName='Interlok - Verify Report'
+
+  componentName='Interlok Build/Verify Report'
+  componentDesc="Generates issue format based on interlokVerify output"
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
 }
@@ -56,13 +57,6 @@ ext.hasGraphViz = { ->
   }
 }
 
-if (JavaVersion.current().isJava8Compatible()) {
-  allprojects {
-    tasks.withType(Javadoc) {
-      options.addStringOption('Xdoclint:none', '-quiet')
-    }
-  }
-}
 ext.gitBranchNameOrTimestamp = { branchName ->
   if (branchName.equals("HEAD") || branchName.equals("develop") || branchName.startsWith("release")) {
     return new Date().format('HH:mm:ss z');
@@ -90,11 +84,33 @@ applicationName = 'interlok-verify-report'
 mainClassName  = 'com.adaptris.labs.verify.CreateVerifyReport'
 distTar.enabled=false
 distZip.enabled=false
-generateLombokConfig.enabled = false
+lombok.disableConfig = true
 def versionDir = "$buildDir/version"
+
+// Disable gradle module generation since we probably don't want
+// xxx.module files in your repository.
+allprojects {
+  tasks.withType(Jar) {
+    metaInf {
+      from ("$rootDir") {
+        include 'LICENSE*'
+        include 'NOTICE*'
+      }
+    }
+  }
+  tasks.withType(GenerateModuleMetadata) {
+    enabled = false
+  }
+}
 
 repositories {
   mavenCentral()
+  if (defaultNexusRepo != "unknown") {
+    maven {
+      url "$defaultNexusRepo"
+      allowInsecureProtocol true
+    }
+  }
   maven { url "$defaultNexusRepo" }
   maven { url "$nexusBaseUrl/content/groups/public" }
   maven { url "$nexusBaseUrl/content/groups/interlok" }
@@ -111,13 +127,13 @@ configurations.all {
 }
 
 dependencies {
-  compile ('com.fasterxml.jackson.core:jackson-databind:2.12.0')
-  compile ('commons-cli:commons-cli:1.4')
+  implementation ('com.fasterxml.jackson.core:jackson-databind:2.13.2')
+  implementation ('commons-cli:commons-cli:1.5.0')
 
   umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
 
-  testCompile ('org.junit.jupiter:junit-jupiter-engine:5.7.0')
-  testCompile ('commons-io:commons-io:2.8.0')
+  testImplementation ('org.junit.jupiter:junit-jupiter-engine:5.8.2')
+  testImplementation ('commons-io:commons-io:2.11.0')
 
 }
 
@@ -146,6 +162,7 @@ task generateVersion {
     versionFile.getParentFile().mkdirs()
     ant.propertyfile(file: versionFile) {
       entry(key: 'component.name', value: componentName)
+      entry(key: 'component.description', value: componentDesc)
       entry(key: 'groupId', value: project.group)
       entry(key: 'artifactId', value: project.name)
       entry(key: 'build.version', value: releaseVersion)
@@ -173,8 +190,8 @@ test {
 
 jacocoTestReport {
     reports {
-        xml.enabled true
-        html.enabled true
+        xml.required= true
+        html.required= true
     }
 }
 
@@ -223,6 +240,7 @@ task umlJavadoc(type: Javadoc) {
   configure(options) {
     options.docletpath = configurations.umlDoclet.files.asType(List)
     options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
+    options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption "umlBasePath", destinationDir.getCanonicalPath()
     options.addStringOption "umlImageFormat", "SVG"
     options.addStringOption "umlExcludedReferences", "java.lang.Exception,java.lang.Object,java.lang.Enum"
@@ -251,7 +269,7 @@ task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
   description 'Compile for lgtm'
 
   source = sourceSets.main.extensions.delombokTask
-  destinationDir = sourceSets.main.java.outputDir
+  destinationDirectory= sourceSets.main.java.classesDirectory
   classpath = project.sourceSets.main.compileClasspath
 }
 
@@ -270,7 +288,7 @@ publishing {
 
       pom.withXml {
         asNode().appendNode("name", componentName)
-        asNode().appendNode("description", "Generates issue format based on interlokVerify output")
+        asNode().appendNode("description", componentDesc)
         def properties = asNode().appendNode("properties")
         properties.appendNode("tags", "verify,sonar")
         properties.appendNode("license", "false")
@@ -297,10 +315,11 @@ spotbugsMain {
   // ignoreFailures = false
   reports {
     xml {
-      enabled = false
+      required.set(false)
     }
     html {
-      enabled = true
+      required.set(true)
+      stylesheet = 'default.xsl'
     }
   }
   // includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
@@ -312,6 +331,17 @@ spotbugsTest.enabled = false
 
 installDist {
   destinationDir = new File(project.buildDir, 'staged')
+}
+
+dependencyCheck  {
+  suppressionFiles= [ "https://raw.githubusercontent.com/adaptris/interlok/develop/gradle/owasp-exclude.xml" ]
+  scanConfigurations = [ "api", "compileClasspath", "runtimeClasspath" ]
+  formats = [ "HTML", "JUNIT" ]
+  junitFailOnCVSS = 7.0
+  failBuildOnCVSS = 7.0
+  analyzers {
+    assemblyEnabled=false
+  }
 }
 
 javadoc.dependsOn umlJavadoc
