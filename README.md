@@ -24,7 +24,7 @@ The report generation has also been added to the [interlok-build-parent][interlo
 ```
 sonarqube {
   properties {
-    property "sonar.projectKey", "adaptris_interlok-hello-world"
+    property "sonar.projectKey", "adaptris-labs_interlok-hello-world"
     property "sonar.organization", "adaptris"
     property "sonar.host.url", "https://sonarcloud.io"
     property "sonar.sourceEncoding", "UTF-8"
@@ -38,4 +38,4 @@ sonarqube {
 A working example can be found at [interlok-hello-world][interlok-hello-world]
 
 [interlok-build-parent]: https://github.com/adaptris/interlok-build-parent
-[interlok-hello-world]: https://github.com/adaptris/interlok-hello-world
+[interlok-hello-world]: https://github.com/adaptris-labs/interlok-hello-world
