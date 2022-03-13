@@ -1,5 +1,5 @@
 # interlok-verify-report
-[![GitHub tag](https://img.shields.io/github/tag/adaptris-labs/interlok-verify-report.svg)](https://github.com/adaptris-labs/interlok-verify-report/tags) [![Build Status](https://travis-ci.org/adaptris-labs/interlok-verify-report.svg?branch=develop)](https://travis-ci.org/adaptris-labs/interlok-verify-report) [![CircleCI](https://circleci.com/gh/adaptris-labs/interlok-verify-report/tree/develop.svg?style=svg)](https://circleci.com/gh/adaptris-labs/interlok-verify-report/tree/develop) [![Actions Status](https://github.com/adaptris-labs/interlok-verify-report/workflows/Java%20CI/badge.svg)](https://github.com/adaptris-labs/interlok-verify-report/actions) [![codecov](https://codecov.io/gh/adaptris-labs/interlok-verify-report/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris-labs/interlok-verify-report) [![Total alerts](https://img.shields.io/lgtm/alerts/g/adaptris-labs/interlok-verify-report.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris-labs/interlok-verify-report/alerts/) [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/adaptris-labs/interlok-verify-report.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris-labs/interlok-verify-report/context:java)
+[![GitHub tag](https://img.shields.io/github/tag/adaptris/interlok-verify-report.svg)](https://github.com/adaptris/interlok-verify-report/tags) [![Build Status](https://travis-ci.org/adaptris/interlok-verify-report.svg?branch=develop)](https://travis-ci.org/adaptris/interlok-verify-report) [![CircleCI](https://circleci.com/gh/adaptris/interlok-verify-report/tree/develop.svg?style=svg)](https://circleci.com/gh/adaptris/interlok-verify-report/tree/develop) [![Actions Status](https://github.com/adaptris/interlok-verify-report/workflows/Java%20CI/badge.svg)](https://github.com/adaptris/interlok-verify-report/actions) [![codecov](https://codecov.io/gh/adaptris/interlok-verify-report/branch/develop/graph/badge.svg)](https://codecov.io/gh/adaptris/interlok-verify-report) [![Total alerts](https://img.shields.io/lgtm/alerts/g/adaptris/interlok-verify-report.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris/interlok-verify-report/alerts/) [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/adaptris/interlok-verify-report.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/adaptris/interlok-verify-report/context:java)
 
 Simple command line application that generates sonars generic issue format based on interlokVerify output.
 
@@ -24,8 +24,8 @@ The report generation has also been added to the [interlok-build-parent][interlo
 ```
 sonarqube {
   properties {
-    property "sonar.projectKey", "adaptris-labs_interlok-hello-world"
-    property "sonar.organization", "adaptris-labs"
+    property "sonar.projectKey", "adaptris_interlok-hello-world"
+    property "sonar.organization", "adaptris"
     property "sonar.host.url", "https://sonarcloud.io"
     property "sonar.sourceEncoding", "UTF-8"
     property "sonar.sources", "./src/main/interlok"
@@ -37,5 +37,5 @@ sonarqube {
 
 A working example can be found at [interlok-hello-world][interlok-hello-world]
 
-[interlok-build-parent]: https://github.com/adaptris-labs/interlok-build-parent
-[interlok-hello-world]: https://github.com/adaptris-labs/interlok-hello-world
+[interlok-build-parent]: https://github.com/adaptris/interlok-build-parent
+[interlok-hello-world]: https://github.com/adaptris/interlok-hello-world
