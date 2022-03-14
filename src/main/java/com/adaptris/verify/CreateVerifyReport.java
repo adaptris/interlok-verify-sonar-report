@@ -1,4 +1,4 @@
-package com.adaptris.labs.verify;
+package com.adaptris.verify;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,11 +21,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import com.adaptris.labs.verify.report.sonar.Issue;
-import com.adaptris.labs.verify.report.sonar.Issues;
-import com.adaptris.labs.verify.report.sonar.Location;
-import com.adaptris.labs.verify.report.sonar.Severity;
-import com.adaptris.labs.verify.report.sonar.Type;
+import com.adaptris.verify.report.sonar.Issue;
+import com.adaptris.verify.report.sonar.Issues;
+import com.adaptris.verify.report.sonar.Location;
+import com.adaptris.verify.report.sonar.Severity;
+import com.adaptris.verify.report.sonar.Type;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;

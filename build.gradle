@@ -2,27 +2,27 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.*
 
 plugins {
-  id 'java'
-  id 'maven-publish'
-  id 'jacoco'
-  id 'application'
+  id "java"
+  id "maven-publish"
+  id "jacoco"
+  id "application"
   // Manage optional dependencies in maven pom.
-  id 'nebula.optional-base' version '7.0.0'
-  id 'com.github.spotbugs' version '5.0.6'
+  id "nebula.optional-base" version "7.0.0"
+  id "com.github.spotbugs" version "5.0.6"
   id "io.freefair.lombok" version "6.4.1"
-  id 'org.owasp.dependencycheck' version '6.5.3'
+  id "org.owasp.dependencycheck" version "6.5.3"
 }
 
 ext {
-  releaseVersion = project.findProperty('releaseVersion') ?: '2.2-SNAPSHOT'
-  nexusBaseUrl = project.findProperty('nexusBaseUrl') ?: 'https://nexus.adaptris.net/nexus'
-  mavenPublishUrl = project.findProperty('mavenPublishUrl') ?: nexusBaseUrl + '/content/repositories/snapshots'
-  repoUsername = project.findProperty('repoUsername') ?: 'set in gradle.properties'
-  repoPassword = project.findProperty('repoPassword') ?: 'set in gradle.properties'
-  defaultNexusRepo = project.findProperty('defaultNexusRepo') ?: 'unknown'
+  releaseVersion = project.findProperty("releaseVersion") ?: "2.2.0"
+  nexusBaseUrl = project.findProperty("nexusBaseUrl") ?: "https://nexus.adaptris.net/nexus"
+  mavenPublishUrl = project.findProperty("mavenPublishUrl") ?: nexusBaseUrl + "/content/repositories/snapshots"
+  repoUsername = project.findProperty("repoUsername") ?: "set in gradle.properties"
+  repoPassword = project.findProperty("repoPassword") ?: "set in gradle.properties"
+  defaultNexusRepo = project.findProperty("defaultNexusRepo") ?: "unknown"
   delombokTargetDir = new File("${project.projectDir}/src/main/generated")
 
-  componentName='Interlok Build/Verify Report'
+  componentName="Interlok Build/Verify Report"
   componentDesc="Generates issue format based on interlokVerify output"
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
@@ -39,7 +39,7 @@ ext.hostname = { ->
   return System.getenv("HOSTNAME")
 }
 
-ext.propertyTemplate = { dir, filename ->
+ext.unitTestProperties = { dir, filename ->
   def file = new File(dir, filename + "." + hostname())
   if (file.exists()) {
     return file.getName()
@@ -59,7 +59,7 @@ ext.hasGraphViz = { ->
 
 ext.gitBranchNameOrTimestamp = { branchName ->
   if (branchName.equals("HEAD") || branchName.equals("develop") || branchName.startsWith("release")) {
-    return new Date().format('HH:mm:ss z');
+    return new Date().format("HH:mm:ss z");
   }
   return branchName;
 }
@@ -78,23 +78,23 @@ ext.buildInfo = { ->
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
-group   = 'com.adaptris.labs'
+group   = "com.adaptris"
 version = releaseVersion
-applicationName = 'interlok-verify-report'
-mainClassName  = 'com.adaptris.labs.verify.CreateVerifyReport'
-distTar.enabled=false
-distZip.enabled=false
+applicationName = "interlok-verify-report"
+mainClassName  = "com.adaptris.verify.CreateVerifyReport"
+distTar.enabled = false
+distZip.enabled = false
 lombok.disableConfig = true
 def versionDir = "$buildDir/version"
 
-// Disable gradle module generation since we probably don't want
+// Disable gradle module generation since we probably don"t want
 // xxx.module files in your repository.
 allprojects {
   tasks.withType(Jar) {
     metaInf {
       from ("$rootDir") {
-        include 'LICENSE*'
-        include 'NOTICE*'
+        include "LICENSE*"
+        include "NOTICE*"
       }
     }
   }
@@ -114,7 +114,7 @@ repositories {
   maven { url "$defaultNexusRepo" }
   maven { url "$nexusBaseUrl/content/groups/public" }
   maven { url "$nexusBaseUrl/content/groups/interlok" }
-  maven { url 'https://jitpack.io' }
+  maven { url "https://jitpack.io" }
 }
 
 
@@ -127,21 +127,21 @@ configurations.all {
 }
 
 dependencies {
-  implementation ('com.fasterxml.jackson.core:jackson-databind:2.13.2')
-  implementation ('commons-cli:commons-cli:1.5.0')
+  implementation ("com.fasterxml.jackson.core:jackson-databind:2.13.2")
+  implementation ("commons-cli:commons-cli:1.5.0")
 
   umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
 
-  testImplementation ('org.junit.jupiter:junit-jupiter-engine:5.8.2')
-  testImplementation ('commons-io:commons-io:2.11.0')
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+  testImplementation ("commons-io:commons-io:2.11.0")
 
 }
 
 
 jar {
   manifest {
-    attributes("Built-By": System.getProperty('user.name'),
-               "Build-Jdk": System.getProperty('java.version'),
+    attributes("Built-By": System.getProperty("user.name"),
+               "Build-Jdk": System.getProperty("java.version"),
                "Implementation-Title": componentName,
                "Implementation-Version": project.version,
                "Implementation-Vendor-Id": project.group,
@@ -152,22 +152,22 @@ jar {
 
 sourceSets {
   main {
-    output.dir(versionDir, builtBy: 'generateVersion')
+    output.dir(versionDir, builtBy: "generateVersion")
   }
 }
 // Generate the META-INF/adaptris-version file
 task generateVersion {
   doLast {
-    def versionFile = new File(new File(versionDir, 'META-INF'), 'adaptris-version')
+    def versionFile = new File(new File(versionDir, "META-INF"), "adaptris-version")
     versionFile.getParentFile().mkdirs()
     ant.propertyfile(file: versionFile) {
-      entry(key: 'component.name', value: componentName)
-      entry(key: 'component.description', value: componentDesc)
-      entry(key: 'groupId', value: project.group)
-      entry(key: 'artifactId', value: project.name)
-      entry(key: 'build.version', value: releaseVersion)
-      entry(key: 'build.date', value: new Date().format('yyyy-MM-dd'))
-      entry(key: 'build.info', value: buildInfo())
+      entry(key: "component.name", value: componentName)
+      entry(key: "component.description", value: componentDesc)
+      entry(key: "groupId", value: project.group)
+      entry(key: "artifactId", value: project.name)
+      entry(key: "build.version", value: releaseVersion)
+      entry(key: "build.date", value: new Date().format("yyyy-MM-dd"))
+      entry(key: "build.info", value: buildInfo())
     }
   }
 }
@@ -195,42 +195,40 @@ jacocoTestReport {
     }
 }
 
-task buildUnitTestProperties(type: Copy) {
-  def propertyFile = propertyTemplate(testResourcesDir(), "unit-tests.properties.template")
+task copyUnitTestProperties(type: Copy) {
+  def propertyFile = unitTestProperties(testResourcesDir(), "unit-tests.properties.template")
   delete file(testResourcesDir() + "/unit-tests.properties")
   from file(testResourcesDir() + "/" + propertyFile)
   into (testResourcesDir())
   rename { String fileName ->
-    fileName.replace(propertyFile, 'unit-tests.properties')
+    fileName.replace(propertyFile, "unit-tests.properties")
   }
   filter(ReplaceTokens, tokens: [JAVA_HOME: System.getProperty("java.home").replaceAll("\\\\", "/")])
   filter(ReplaceTokens, tokens: [BASE_DIR: project.projectDir.getCanonicalPath().replaceAll("\\\\", "/")])
   filter(ReplaceTokens, tokens: [BUILD_DIR: project.buildDir.getCanonicalPath().replaceAll("\\\\", "/")])
 }
 
-task deleteGeneratedFiles(type: Delete) {
-  delete file(testResourcesDir() + "/unit-tests.properties"), delombokTargetDir
+task deleteUnitTestProperties(type: Delete) {
+    delete file(testResourcesDir() + "/unit-tests.properties")
 }
-
 
 task deleteDerbyLog(type: Delete) {
-  delete 'derby.log'
+  delete "derby.log"
 }
 
-
 task javadocJar(type: Jar, dependsOn: javadoc) {
-  classifier = 'javadoc'
+  classifier = "javadoc"
   from javadoc.destinationDir
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+    classifier = "sources"
     from sourceSets.main.extensions.delombokTask
 }
 
 task umlJavadoc(type: Javadoc) {
-  group 'Documentation'
-  description 'Build javadocs using plantuml + graphviz + umldoclet, if dot is available'
+  group "Documentation"
+  description "Build javadocs using plantuml + graphviz + umldoclet, if dot is available"
 
   onlyIf {
     hasGraphViz()
@@ -239,8 +237,8 @@ task umlJavadoc(type: Javadoc) {
   classpath = project.sourceSets.main.compileClasspath
   configure(options) {
     options.docletpath = configurations.umlDoclet.files.asType(List)
+    options.addStringOption("Xdoclint:none", "-quiet")
     options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
-    options.addStringOption('Xdoclint:none', '-quiet')
     options.addStringOption "umlBasePath", destinationDir.getCanonicalPath()
     options.addStringOption "umlImageFormat", "SVG"
     options.addStringOption "umlExcludedReferences", "java.lang.Exception,java.lang.Object,java.lang.Enum"
@@ -265,8 +263,8 @@ delombok {
 }
 
 task lgtmCompile(type: JavaCompile, dependsOn: delombok) {
-  group 'Build'
-  description 'Compile for lgtm'
+  group "Build"
+  description "Compile for lgtm"
 
   source = sourceSets.main.extensions.delombokTask
   destinationDirectory= sourceSets.main.java.classesDirectory
@@ -306,6 +304,10 @@ publishing {
   }
 }
 
+task deleteGeneratedFiles(type: Delete) {
+  delete delombokTargetDir
+}
+
 spotbugsMain {
   effort = "max"
   reportLevel = "high"
@@ -319,7 +321,7 @@ spotbugsMain {
     }
     html {
       required.set(true)
-      stylesheet = 'default.xsl'
+      stylesheet = "default.xsl"
     }
   }
   // includeFilter = new File("$rootDir/gradle/spotbugs-filter.xml")
@@ -330,7 +332,7 @@ spotbugsMain {
 spotbugsTest.enabled = false
 
 installDist {
-  destinationDir = new File(project.buildDir, 'staged')
+  destinationDir = new File(project.buildDir, "staged")
 }
 
 dependencyCheck  {
@@ -345,6 +347,6 @@ dependencyCheck  {
 }
 
 javadoc.dependsOn umlJavadoc
-processTestResources.dependsOn buildUnitTestProperties
-clean.dependsOn deleteGeneratedFiles,deleteDerbyLog
+processTestResources.dependsOn copyUnitTestProperties
+clean.dependsOn deleteUnitTestProperties,deleteGeneratedFiles,deleteDerbyLog
 check.dependsOn jacocoTestReport

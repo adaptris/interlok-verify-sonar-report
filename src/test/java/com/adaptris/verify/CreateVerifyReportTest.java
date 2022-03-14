@@ -1,9 +1,9 @@
-package com.adaptris.labs.verify;
+package com.adaptris.verify;
 
-import com.adaptris.labs.verify.report.sonar.Issue;
-import com.adaptris.labs.verify.report.sonar.Issues;
-import com.adaptris.labs.verify.report.sonar.Severity;
-import com.adaptris.labs.verify.report.sonar.Type;
+import com.adaptris.verify.report.sonar.Issue;
+import com.adaptris.verify.report.sonar.Issues;
+import com.adaptris.verify.report.sonar.Severity;
+import com.adaptris.verify.report.sonar.Type;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.io.FileUtils;

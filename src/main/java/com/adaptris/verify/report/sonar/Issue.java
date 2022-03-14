@@ -1,4 +1,4 @@
-package com.adaptris.labs.verify.report.sonar;
+package com.adaptris.verify.report.sonar;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
