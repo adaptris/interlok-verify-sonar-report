@@ -36,4 +36,4 @@ jobs:
       env:
         ORG_GRADLE_PROJECT_repoUsername: deployment
         ORG_GRADLE_PROJECT_repoPassword: ${{ secrets.NEXUS_REPO_PASSWORD }}
-        ORG_GRADLE_PROJECT_mavenPublishPath: ${{ startswith(github.ref 'refs/tags/') && '/content/repositories/releases' || '' }}
+        ORG_GRADLE_PROJECT_mavenPublishPath: ${{ startswith(github.ref, 'refs/tags/') && '/content/repositories/releases' || '' }}
