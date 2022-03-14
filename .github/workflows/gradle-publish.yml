@@ -4,7 +4,8 @@ on:
   push:
     branches:
     - develop
-    - master
+    tags:
+    - '*'
   schedule:
     - cron: 0 3 * * * # Daily 3 a.m.
 
@@ -35,4 +36,4 @@ jobs:
       env:
         ORG_GRADLE_PROJECT_repoUsername: deployment
         ORG_GRADLE_PROJECT_repoPassword: ${{ secrets.NEXUS_REPO_PASSWORD }}
-        ORG_GRADLE_PROJECT_mavenPublishPath: ${{ github.ref == 'refs/heads/master' && '/content/repositories/releases' || '' }}
+        ORG_GRADLE_PROJECT_mavenPublishPath: ${{ startswith(github.ref, 'refs/tags/') && '/content/repositories/releases' || '' }}

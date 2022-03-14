@@ -2,7 +2,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.*
 
 plugins {
-  id "java"
+  id "java-library"
   id "maven-publish"
   id "jacoco"
   id "application"
@@ -14,7 +14,7 @@ plugins {
 }
 
 ext {
-  releaseVersion = project.findProperty("releaseVersion") ?: "2.2.0"
+  releaseVersion = project.findProperty("releaseVersion") ?: "3.0.0"
   nexusBaseUrl = project.findProperty("nexusBaseUrl") ?: "https://nexus.adaptris.net/nexus"
   mavenPublishPath = project.findProperty("mavenPublishPath") ?: "/content/repositories/snapshots"
   mavenPublishUrl = project.findProperty("mavenPublishUrl") ?: nexusBaseUrl + mavenPublishPath
@@ -49,13 +49,14 @@ ext.unitTestProperties = { dir, filename ->
 }
 
 ext.hasGraphViz = { ->
-  def app = "dot"
-  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-    app = app + ".exe"
-  }
-  return System.getenv("PATH").split(File.pathSeparator).any{
-    java.nio.file.Paths.get("${it}").resolve(app).toFile().exists()
-  }
+//  def app = "dot"
+//  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+//    app = app + ".exe"
+//  }
+//  return System.getenv("PATH").split(File.pathSeparator).any{
+//    java.nio.file.Paths.get("${it}").resolve(app).toFile().exists()
+//  }
+  return false
 }
 
 ext.gitBranchNameOrTimestamp = { branchName ->
@@ -77,8 +78,8 @@ ext.buildInfo = { ->
     }
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_11
+targetCompatibility = JavaVersion.VERSION_11
 group   = "com.adaptris"
 version = releaseVersion
 applicationName = "interlok-verify-report"
@@ -239,6 +240,7 @@ task umlJavadoc(type: Javadoc) {
   configure(options) {
     options.docletpath = configurations.umlDoclet.files.asType(List)
     options.addStringOption("Xdoclint:none", "-quiet")
+    options.addBooleanOption "-no-module-directories", true
     options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
     options.addStringOption "umlBasePath", destinationDir.getCanonicalPath()
     options.addStringOption "umlImageFormat", "SVG"
