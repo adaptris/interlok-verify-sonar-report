@@ -14,7 +14,7 @@ plugins {
 }
 
 ext {
-  releaseVersion = project.findProperty("releaseVersion") ?: "3.0-SNAPSHOT"
+  releaseVersion = project.findProperty("releaseVersion") ?: "3.0.0"
   nexusBaseUrl = project.findProperty("nexusBaseUrl") ?: "https://nexus.adaptris.net/nexus"
   mavenPublishPath = project.findProperty("mavenPublishPath") ?: "/content/repositories/snapshots"
   mavenPublishUrl = project.findProperty("mavenPublishUrl") ?: nexusBaseUrl + mavenPublishPath
