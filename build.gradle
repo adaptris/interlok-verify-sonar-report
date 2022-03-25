@@ -129,7 +129,7 @@ configurations.all {
 }
 
 dependencies {
-  implementation ("com.fasterxml.jackson.core:jackson-databind:2.13.2")
+  implementation ("com.fasterxml.jackson.core:jackson-databind:2.13.2.1")
   implementation ("commons-cli:commons-cli:1.5.0")
 
   umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
