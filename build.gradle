@@ -27,6 +27,8 @@ ext {
   componentDesc="Generates issue format based on interlokVerify output"
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
+
+  jacksonVersion = "2.13.2.20220324"
 }
 
 ext.testResourcesDir = { ->
@@ -129,7 +131,9 @@ configurations.all {
 }
 
 dependencies {
-  implementation ("com.fasterxml.jackson.core:jackson-databind:2.13.2")
+  // Dependency to platform/BOM
+  implementation (platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+  implementation ("com.fasterxml.jackson.core:jackson-databind")
   implementation ("commons-cli:commons-cli:1.5.0")
 
   umlDoclet("nl.talsmasoftware:umldoclet:1.1.4")
