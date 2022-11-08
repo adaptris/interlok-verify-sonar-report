@@ -28,7 +28,7 @@ ext {
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
 
-  jacksonVersion = "2.13.4.20221013"
+  jacksonVersion = "2.14.0"
 }
 
 ext.testResourcesDir = { ->
