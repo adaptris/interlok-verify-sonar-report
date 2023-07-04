@@ -121,7 +121,6 @@ repositories {
   maven { url "https://jitpack.io" }
 }
 
-
 configurations {
   umlDoclet {}
 }
@@ -140,9 +139,7 @@ dependencies {
 
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.9.1")
   testImplementation ("commons-io:commons-io:2.11.0")
-
 }
-
 
 jar {
   manifest {
@@ -154,7 +151,6 @@ jar {
                "Implementation-Vendor": organizationName)
   }
 }
-
 
 sourceSets {
   main {
@@ -178,8 +174,6 @@ task generateVersion {
   }
 }
 
-
-
 javadoc {
   onlyIf {
     !hasGraphViz()
@@ -193,12 +187,11 @@ test {
   useJUnitPlatform()
 }
 
-
 jacocoTestReport {
-    reports {
-        xml.required= true
-        html.required= true
-    }
+  reports {
+    xml.required= true
+    html.required= true
+  }
 }
 
 task copyUnitTestProperties(type: Copy) {
@@ -215,7 +208,7 @@ task copyUnitTestProperties(type: Copy) {
 }
 
 task deleteUnitTestProperties(type: Delete) {
-    delete file(testResourcesDir() + "/unit-tests.properties")
+  delete file(testResourcesDir() + "/unit-tests.properties")
 }
 
 task deleteDerbyLog(type: Delete) {
@@ -228,8 +221,8 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.extensions.delombokTask
+  classifier = "sources"
+  from sourceSets.main.extensions.delombokTask
 }
 
 task umlJavadoc(type: Javadoc) {
@@ -242,25 +235,16 @@ task umlJavadoc(type: Javadoc) {
   source = sourceSets.main.extensions.delombokTask
   classpath = project.sourceSets.main.compileClasspath
   configure(options) {
-    options.docletpath = configurations.umlDoclet.files.asType(List)
     options.addStringOption("Xdoclint:none", "-quiet")
     options.addBooleanOption "-no-module-directories", true
+    options.docletpath = configurations.umlDoclet.files.asType(List)
     options.doclet = "nl.talsmasoftware.umldoclet.UMLDoclet"
-    options.addStringOption "umlBasePath", destinationDir.getCanonicalPath()
+    // Create class & package use pages
+    options.addStringOption "use"
     options.addStringOption "umlImageFormat", "SVG"
-    options.addStringOption "umlExcludedReferences", "java.lang.Exception,java.lang.Object,java.lang.Enum"
-    options.addStringOption "umlIncludePrivateClasses","false"
-    options.addStringOption "umlIncludePackagePrivateClasses","false"
-    options.addStringOption "umlIncludeProtectedClasses","false"
-    options.addStringOption "umlIncludeAbstractSuperclassMethods","false"
-    options.addStringOption "umlIncludeConstructors","false"
-    options.addStringOption "umlIncludePublicFields","false"
-    options.addStringOption "umlIncludePackagePrivateFields","false"
-    options.addStringOption "umlIncludeProtectedFields", "false"
-    options.addStringOption "umlIncludeDeprecatedClasses", "false"
-    options.addStringOption "umlIncludePrivateInnerClasses", "false"
-    options.addStringOption "umlIncludePackagePrivateInnerClasses", "false"
-    options.addStringOption "umlIncludeProtectedInnerClasses","false"
+    options.addStringOption "umlExcludedTypeReferences", "java.lang.Exception,java.lang.Object,java.lang.Enum,java.lang.annotation.Annotation"
+    options.addStringOption "umlJavaBeanPropertiesAsFields"
+    options.addBooleanOption "failOnCyclicPackageDependencies", false
     title= componentName
   }
 }
