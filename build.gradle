@@ -8,9 +8,9 @@ plugins {
   id "application"
   // Manage optional dependencies in maven pom.
   id "nebula.optional-base" version "7.0.0"
-  id "com.github.spotbugs" version "5.0.13"
+  id "com.github.spotbugs" version "5.0.14"
   id "io.freefair.lombok" version "6.5.1"
-  id "org.owasp.dependencycheck" version "7.2.1"
+  id "org.owasp.dependencycheck" version "8.2.1"
 }
 
 ext {
@@ -28,7 +28,7 @@ ext {
   organizationName = "Adaptris Ltd"
   organizationUrl = "http://interlok.adaptris.net"
 
-  jacksonVersion = "2.14.1"
+  jacksonVersion = "2.15.2"
 }
 
 ext.testResourcesDir = { ->
@@ -137,8 +137,8 @@ dependencies {
 
   umlDoclet("nl.talsmasoftware:umldoclet:2.1.0")
 
-  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.9.1")
-  testImplementation ("commons-io:commons-io:2.11.0")
+  testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.9.3")
+  testImplementation ("commons-io:commons-io:2.13.0")
 }
 
 jar {
