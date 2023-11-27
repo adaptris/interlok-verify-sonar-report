@@ -135,7 +135,7 @@ dependencies {
   implementation ("com.fasterxml.jackson.core:jackson-databind")
   implementation ("commons-cli:commons-cli:1.6.0")
 
-  umlDoclet("nl.talsmasoftware:umldoclet:2.1.0")
+  umlDoclet("nl.talsmasoftware:umldoclet:2.1.1")
 
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.1")
   testImplementation ("commons-io:commons-io:2.15.0")
