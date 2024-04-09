@@ -138,7 +138,7 @@ dependencies {
   umlDoclet("nl.talsmasoftware:umldoclet:2.1.2")
 
   testImplementation ("org.junit.jupiter:junit-jupiter-engine:5.10.2")
-  testImplementation ("commons-io:commons-io:2.16.0")
+  testImplementation ("commons-io:commons-io:2.16.1")
 }
 
 jar {
